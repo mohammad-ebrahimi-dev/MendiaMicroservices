@@ -8,10 +8,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");  
+        options.SwaggerEndpoint("/swagger/user-service/swagger.json", "User Service");
+        options.SwaggerEndpoint("/swagger/task-service/swagger.json", "Task Service");
         options.RoutePrefix = string.Empty; 
     });
 }
+
 
 app.UseHttpsRedirection();
 
@@ -21,5 +23,6 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
+
 app.Run();
 

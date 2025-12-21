@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gateway.Api.Controllers
+namespace TaskService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
