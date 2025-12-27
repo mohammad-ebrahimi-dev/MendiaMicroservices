@@ -1,25 +1,48 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
+using TaskService.Infrastructure.DContext;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
+var ConnectionString = builder.Configuration["ConnectionStrings:Default"];
+builder.Services.AddDbContext<ProgramDbContext>(options =>
+{
+    options.UseSqlServer(ConnectionString);
+});
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Task Service API",
+        Version = "v1"
+    });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowGateway", policy =>
+        policy.WithOrigins("https://localhost:7021")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseCors("AllowGateway");
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Task Service");
+        options.RoutePrefix = string.Empty;
+    });
 }
+
 app.UseHttpsRedirection();
+app.MapControllers();  
 
-
-app.UseRouting();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
 app.Run();
-
