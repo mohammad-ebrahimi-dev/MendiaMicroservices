@@ -1,11 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
-using TaskService.Infrastructure.DContext;
+using TaskService.Infrastructure.DContexts;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(TaskService.Application.Queries.GetTaskCommand).Assembly);
+});
+
 var ConnectionString = builder.Configuration["ConnectionStrings:Default"];
 builder.Services.AddDbContext<ProgramDbContext>(options =>
 {

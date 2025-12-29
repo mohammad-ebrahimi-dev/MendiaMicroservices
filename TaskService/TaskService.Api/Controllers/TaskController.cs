@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-
+using TaskService.Application.Queries;
 namespace TaskService.Controllers
 {
     [Route("api/[controller]")]
@@ -8,11 +8,16 @@ namespace TaskService.Controllers
     public class TaskController : ControllerBase
     {
         private static readonly List<TaskDto> Tasks = new List<TaskDto>();
-
-        [HttpGet]
-        public ActionResult<IEnumerable<TaskDto>> GetAll()
+        private readonly IMediator _mediator;
+        public TaskController(IMediator mediator)
         {
-            return Ok(Tasks);
+            _mediator = mediator;
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var result = await _mediator.Send(new GetTaskCommand());
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
