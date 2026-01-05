@@ -1,54 +1,59 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi;
+﻿using Microsoft.EntityFrameworkCore;
 using TaskService.Infrastructure.DContexts;
+using TaskService.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(TaskService.Application.Queries.GetTaskCommand).Assembly);
-});
-
-var ConnectionString = builder.Configuration["ConnectionStrings:Default"];
-builder.Services.AddDbContext<ProgramDbContext>(options =>
-{
-    options.UseSqlServer(ConnectionString);
-});
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Task Service API",
-        Version = "v1"
-    });
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowGateway", policy =>
-        policy.WithOrigins("https://localhost:7021")
-              .AllowAnyHeader()
-              .AllowAnyMethod());
-});
+ConfigureServices(builder);
 
 var app = builder.Build();
 
-app.UseCors("AllowGateway");
+// Configure middlewares
+ConfigureMiddlewares(app);
 
-if (app.Environment.IsDevelopment())
+// Run the application
+app.Run();
+
+void ConfigureServices(WebApplicationBuilder builder)
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+
+    builder.Services.AddMediatR(cfg =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Task Service");
-        options.RoutePrefix = string.Empty;
+        cfg.RegisterServicesFromAssembly(typeof(TaskService.Application.Queries.GetTaskCommand).Assembly);
+    });
+
+    var connectionString = builder.Configuration["ConnectionStrings:Default"];
+    builder.Services.AddDbContext<ProgramDbContext>(options =>
+    {
+        options.UseSqlServer(connectionString);
+    });
+
+    builder.Services.AddTaskServiceSwagger();
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowGateway", policy =>
+            policy.WithOrigins("https://localhost:7021")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod());
     });
 }
 
-app.UseHttpsRedirection();
-app.MapControllers();  
+void ConfigureMiddlewares(WebApplication app)
+{
+    app.UseCors("AllowGateway");
 
-app.Run();
+    if (app.Environment.IsDevelopment())
+    {
+        // مسیر Swagger JSON
+        app.UseSwagger();
+
+        app.UseSwaggerUI();
+    }
+
+    // Enable HTTPS redirection and map controllers
+    app.UseHttpsRedirection();
+    app.MapControllers();
+}
