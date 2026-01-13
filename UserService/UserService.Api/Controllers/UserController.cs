@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using UserService.Infrastructure.Repository;
 
 namespace Gateway.Api.Controllers
 {
@@ -7,6 +7,13 @@ namespace Gateway.Api.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IUser _user;
+
+        public UserController(IUser user)
+        {
+            _user = user;
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetById(Guid id)
         {
@@ -16,24 +23,29 @@ namespace Gateway.Api.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok();
+            var result = _user.Get();
+            return Ok(result);
         }
 
        [HttpPost]
         public IActionResult Create([FromBody] CreateUserRequest request)
         {
+            var result = _user.Create("test");
             return CreatedAtAction(nameof(GetById), new { id = Guid.NewGuid() }, null);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(Guid id, [FromBody] UpdateUserRequest request)
+        public IActionResult Update(int id, [FromBody] UpdateUserRequest request)
         {
+            var result = _user.Update("test");
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public IActionResult Delete(int id)
         {
+            var result = _user.Delete("test");
             return NoContent();
         }
         public class CreateUserRequest

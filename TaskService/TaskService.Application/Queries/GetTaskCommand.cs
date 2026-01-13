@@ -1,27 +1,25 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using TaskService.Application.Common;
 using TaskService.Infrastructure.DContexts;
 namespace TaskService.Application.Queries
 {
-    public class GetTaskCommand : IRequest<IEnumerable<TaskService.Domain.Entity.Task>>
+    public class GetTaskCommand : IRequest<string>
     {
-        public GetTaskCommand()
-        {
-            
-        }
     }
 
-    public class GetTaskCommandHandler : IRequestHandler<GetTaskCommand, IEnumerable<TaskService.Domain.Entity.Task>>
+    public class GetTaskCommandHandler : IRequestHandler<GetTaskCommand, string>
     {
         private readonly ProgramDbContext _context;
         public GetTaskCommandHandler(ProgramDbContext context)
         {
             _context = context;
         }
-        public async Task<IEnumerable<TaskService.Domain.Entity.Task>> Handle(GetTaskCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(GetTaskCommand request, CancellationToken cancellationToken)
         {
-            var tasks = await _context.Tasks.ToListAsync();
-            return tasks;
+            var tasks = await _context.Tasks.ToListAsync(cancellationToken);
+            //return Result<List<TaskService.Domain.Entity.Task>>.Success(tasks, "Tasks fetched successfully")        };
+            return "test";
         }
     }
 }

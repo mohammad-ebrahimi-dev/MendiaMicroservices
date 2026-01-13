@@ -8,8 +8,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/user-service/swagger.json", "User Service");
-        options.SwaggerEndpoint("https://localhost:5001/swagger/v1/swagger.json", "Task Service API");
+        options.SwaggerEndpoint("https://localhost:5001/swagger/v1/swagger.json", "UserService");
+        options.SwaggerEndpoint("https://localhost:5097/swagger/v1/swagger.json", "TaskService API");
         options.RoutePrefix = string.Empty; 
     });
 }
