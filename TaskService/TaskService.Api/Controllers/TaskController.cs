@@ -31,11 +31,10 @@ namespace TaskService.Controllers
         }
 
         [HttpPost]
-        public ActionResult<TaskDto> Create([FromBody] TaskDto newTask)
+        public IActionResult Create([FromBody] Guid data)
         {
-            newTask.Id = Tasks.Count + 1; 
-            Tasks.Add(newTask);
-            return CreatedAtAction(nameof(GetById), new { id = newTask.Id }, newTask);
+            var result = _mediator.Send(new CreateTaskCommand { Id = data});
+            return Ok(result);
         }
 
         [HttpPut("{id}")]

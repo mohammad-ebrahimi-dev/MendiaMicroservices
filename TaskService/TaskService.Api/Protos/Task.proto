@@ -1,0 +1,43 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "TaskService.Api.Protos";
+
+package taskservice;
+
+service TaskService {
+  rpc GetAllTasks (Empty) returns (TaskList);
+  
+  rpc GetTaskById (TaskIdRequest) returns (TaskDto);
+  
+  rpc CreateTask (CreateTaskRequest) returns (TaskDto);
+  
+  rpc UpdateTask (UpdateTaskRequest) returns (Empty);
+  
+  rpc DeleteTask (TaskIdRequest) returns (Empty);
+}
+
+message Empty {}
+
+message TaskIdRequest {
+  int32 id = 1;
+}
+
+message CreateTaskRequest {
+  string guid = 1;
+}
+
+message UpdateTaskRequest {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+}
+
+message TaskList {
+  repeated TaskDto tasks = 1;
+}
+
+message TaskDto {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+}

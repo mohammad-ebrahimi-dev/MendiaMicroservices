@@ -4,32 +4,28 @@ using TaskService.Infrastructure.DContexts;
 
 namespace TaskService.Application.Queries
 {
-    // Command
-    public class GetTaskByIdCommand : IRequest<TaskService.Domain.Entity.Task>
+    public class CreateTaskCommand : IRequest<TaskService.Domain.Entity.Task>
     {
         public Guid Id { get; set; }
 
-        public GetTaskByIdCommand(Guid id)
-        {
-            Id = id;
-        }
+
     }
 
-    // CommandHandler
-    public class GetTaskByIdCommandHandler : IRequestHandler<GetTaskByIdCommand, TaskService.Domain.Entity.Task>
+    public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, TaskService.Domain.Entity.Task>
     {
         private readonly ProgramDbContext _context;
 
-        public GetTaskByIdCommandHandler(ProgramDbContext context)
+        public CreateTaskCommandHandler(ProgramDbContext context)
         {
             _context = context;
         }
 
-        public async Task<TaskService.Domain.Entity.Task> Handle(GetTaskByIdCommand request, CancellationToken cancellationToken)
+        public async Task<TaskService.Domain.Entity.Task> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
         {
-            var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
 
-            return task;
+            //var task = 
+
+            return new TaskService.Domain.Entity.Task { };
         }
     }
 }

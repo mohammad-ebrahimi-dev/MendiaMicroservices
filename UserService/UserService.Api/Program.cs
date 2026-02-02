@@ -1,5 +1,4 @@
-using UserService.Application.User.Commands;
-using UserService.Application.Users;
+using UserService.Application.Common;
 using UserService.Infrastructure.Repository;
 
 internal class Program
@@ -7,14 +6,9 @@ internal class Program
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddControllers();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddScoped<IUser, CreateUser>();
-        builder.Services.AddScoped<IUser, UpdateUser>();
-        builder.Services.AddScoped<IUser, GetUser>();
-        builder.Services.AddScoped<IUser, DeleteUser>();
+        builder.Services.AddScoped<IRepository, UserRepository>();
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowGateway", policy =>
@@ -23,9 +17,7 @@ internal class Program
                       .AllowAnyMethod());
         });
         var app = builder.Build();
-
         app.UseCors("AllowGateway");
-
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -35,7 +27,6 @@ internal class Program
                 options.RoutePrefix = "";
             });
         }
-
         app.UseHttpsRedirection();
 
         app.UseRouting();

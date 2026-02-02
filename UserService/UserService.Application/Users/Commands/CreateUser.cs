@@ -1,10 +1,12 @@
-﻿namespace UserService.Application.User.Commands
+﻿using UserService.Infrastructure.Repository;
+
+namespace UserService.Application.User.Commands
 {
-    public class CreateUser : UserService.Application.Common.User
-    {
-        public override object Create(object data)
-        {
-            return "test";
-        }
-    }
+    //public class CreateUser : AbstractUser<>
+    //{
+    //    object Create(object data)
+    //    {
+    //        return "test";
+    //    }
+    //}
 }

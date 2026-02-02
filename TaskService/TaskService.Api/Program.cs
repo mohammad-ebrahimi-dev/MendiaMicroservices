@@ -1,59 +1,66 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TaskService.Infrastructure.DContexts;
 using TaskService.Api.Extensions;
+using TaskService.Infrastructure.DContexts;
 
-var builder = WebApplication.CreateBuilder(args);
+public class Program
+{
+    public static void Main(string[] args)
+    {
+    var builder = WebApplication.CreateBuilder(args);
 
-ConfigureServices(builder);
+    ConfigureServices(builder);
 
-var app = builder.Build();
+    var app = builder.Build();
 
-// Configure middlewares
-ConfigureMiddlewares(app);
+    ConfigureMiddlewares(app);
 
-// Run the application
-app.Run();
+    app.Run();
 
 void ConfigureServices(WebApplicationBuilder builder)
-{
-    builder.Services.AddControllers();
-    builder.Services.AddEndpointsApiExplorer();
-
-    builder.Services.AddMediatR(cfg =>
     {
-        cfg.RegisterServicesFromAssembly(typeof(TaskService.Application.Queries.GetTaskCommand).Assembly);
-    });
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
 
-    var connectionString = builder.Configuration["ConnectionStrings:Default"];
-    builder.Services.AddDbContext<ProgramDbContext>(options =>
-    {
-        options.UseSqlServer(connectionString);
-    });
+        builder.Services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(typeof(TaskService.Application.Queries.GetTaskCommand).Assembly);
+        });
 
-    builder.Services.AddTaskServiceSwagger();
+        var connectionString = builder.Configuration["ConnectionStrings:Default"];
+        builder.Services.AddDbContext<ProgramDbContext>(options =>
+        {
+            options.UseSqlServer(connectionString);
+        });
 
-    builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("AllowGateway", policy =>
-            policy.WithOrigins("https://localhost:7021")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod());
-    });
-}
+        builder.Services.AddTaskServiceSwagger();
 
-void ConfigureMiddlewares(WebApplication app)
-{
-    app.UseCors("AllowGateway");
-
-    if (app.Environment.IsDevelopment())
-    {
-        // مسیر Swagger JSON
-        app.UseSwagger();
-
-        app.UseSwaggerUI();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowGateway", policy =>
+                policy.WithOrigins("https://localhost:7021")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod());
+        });
     }
 
-    // Enable HTTPS redirection and map controllers
-    app.UseHttpsRedirection();
-    app.MapControllers();
+    void ConfigureMiddlewares(WebApplication app)
+    {
+        app.UseCors("AllowGateway");
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Task Service v1");
+                options.RoutePrefix = "";
+            });
+        }
+
+        app.UseHttpsRedirection();
+        app.MapControllers();
+    }
+
+}
 }
